@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY apps/ /app/apps/
 COPY packages/ /app/packages/
 COPY scripts/ /app/scripts/
+COPY workers/ /app/workers/
 
 # Python Path ayarla
 ENV PYTHONPATH=/app
