@@ -430,3 +430,44 @@ def get_system_status(db: Session = Depends(get_db)):
         }
     }
 
+
+@api_router.post("/system/ingest/prices")
+def trigger_price_ingestion():
+    """Tüm aktif varlıklar için fiyat barlarını asenkron çekmeye başlar."""
+    from workers.tasks import ingest_prices_task
+    task = ingest_prices_task.delay()
+    return {"job_id": task.id, "status": "QUEUED", "mesaj": "Fiyat çekme görevi kuyruğa eklendi."}
+
+
+@api_router.post("/system/ingest/news")
+def trigger_news_ingestion():
+    """Haberleri ve yapay zeka sentiment analizini asenkron çekmeye başlar."""
+    from workers.tasks import run_news_ingestion_task
+    task = run_news_ingestion_task.delay()
+    return {"job_id": task.id, "status": "QUEUED", "mesaj": "Haber çekme görevi kuyruğa eklendi."}
+
+
+@api_router.post("/system/features")
+def trigger_feature_generation():
+    """Öznitelik matrislerini asenkron hesaplamaya başlar."""
+    from workers.tasks import run_feature_generation_task
+    task = run_feature_generation_task.delay()
+    return {"job_id": task.id, "status": "QUEUED", "mesaj": "Öznitelik hesaplama görevi kuyruğa eklendi."}
+
+
+@api_router.post("/system/predict")
+def trigger_prediction_generation():
+    """ML yön tahminlerini asenkron hesaplamaya başlar."""
+    from workers.tasks import run_prediction_generation_task
+    task = run_prediction_generation_task.delay()
+    return {"job_id": task.id, "status": "QUEUED", "mesaj": "ML yön tahmini görevi kuyruğa eklendi."}
+
+
+@api_router.post("/system/maintenance")
+def trigger_maintenance():
+    """Model kalibrasyonu ve işlem tez değerlendirmelerini asenkron güncellemeye başlar."""
+    from workers.tasks import run_maintenance_task
+    task = run_maintenance_task.delay()
+    return {"job_id": task.id, "status": "QUEUED", "mesaj": "Bakım ve drift takibi görevi kuyruğa eklendi."}
+
+
