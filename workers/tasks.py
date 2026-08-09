@@ -9,24 +9,18 @@ from packages.backtest_engine.backtester import BacktestEngine
 
 logger = logging.getLogger("axonforge.workers.tasks")
 
-@celery_app.task(name="workers.tasks.ingest_prices_task")
-def ingest_prices_task(symbol: str, days: int = 365) -> Dict[str, Any]:
-    """Seçilen sembol için fiyat verilerini asenkron indirir ve veri kalite kontrolünden geçirip kaydeder."""
-    logger.info(f"Asenkron Fiyat İndirme Tetiklendi: {symbol} (son {days} gün)")
-    db = SessionLocal()
-    router = ProviderRouter()
-    
+def _ingest_single_asset_prices(db, router, symbol: str, days: int) -> Dict[str, Any]:
     try:
         asset = db.query(Asset).filter(Asset.symbol == symbol).first()
         if not asset:
-            return {"status": "FAILED", "error": "Varlık bulunamadı."}
+            return {"status": "FAILED", "symbol": symbol, "error": "Varlık bulunamadı."}
             
         start_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
         end_date = datetime.now().strftime("%Y-%m-%d")
         
         bars = router.fetch_daily_bars(symbol, start_date, end_date)
         if not bars:
-            return {"status": "FAILED", "error": "Fiyat verisi alınamadı."}
+            return {"status": "FAILED", "symbol": symbol, "error": "Fiyat verisi alınamadı."}
             
         from packages.data_quality.quality import calculate_data_quality_score
         quality_res = calculate_data_quality_score(bars)
@@ -65,11 +59,31 @@ def ingest_prices_task(symbol: str, days: int = 365) -> Dict[str, Any]:
             "data_quality_score": quality_res["score"]
         }
     except Exception as e:
-        logger.error(f"Fiyat indirme görevi hatası: {str(e)}")
+        logger.error(f"Fiyat indirme hatası ({symbol}): {str(e)}")
         db.rollback()
-        return {"status": "FAILED", "error": str(e)}
+        return {"status": "FAILED", "symbol": symbol, "error": str(e)}
+
+
+@celery_app.task(name="workers.tasks.ingest_prices_task")
+def ingest_prices_task(symbol: str = None, days: int = 365) -> Dict[str, Any]:
+    """Seçilen sembol (veya None ise tüm aktif semboller) için fiyat verilerini indirir ve kaydeder."""
+    db = SessionLocal()
+    router = ProviderRouter()
+    try:
+        if symbol is None:
+            assets = db.query(Asset).filter(Asset.is_active == True).all()
+            logger.info(f"Tüm aktif varlıklar için asenkron fiyat indirme başlatıldı: {len(assets)} sembol")
+            results = []
+            for asset in assets:
+                res = _ingest_single_asset_prices(db, router, asset.symbol, days)
+                results.append(res)
+            return {"status": "SUCCESS", "processed_assets": len(results), "details": results}
+        else:
+            res = _ingest_single_asset_prices(db, router, symbol, days)
+            return res
     finally:
         db.close()
+
 
 
 @celery_app.task(name="workers.tasks.run_backtest_task")
