@@ -73,8 +73,28 @@ app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/health")
 def health_check():
-    """API sürecinin aktif olduğunu doğrular."""
-    return {"status": "ONLINE", "version": "1.0"}
+    """Sistem bileşenlerinin sağlık durumunu döndürür."""
+    db_status = "ONLINE"
+    ai_status = "ONLINE"
+    
+    try:
+        check_db_connection()
+    except Exception:
+        db_status = "OFFLINE"
+        
+    try:
+        from packages.ai_agent.agent import FinancialAIAgent
+        agent = FinancialAIAgent()
+        agent.check_llm_health()
+    except Exception:
+        ai_status = "UNAVAILABLE"
+        
+    return {
+        "status": "ONLINE",
+        "veritabanı": db_status,
+        "yapay_zeka_ajani": ai_status,
+        "version": "1.0"
+    }
 
 @app.get("/ready")
 def readiness_check():
