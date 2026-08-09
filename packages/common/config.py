@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     TWELVEDATA_API_KEY: Optional[str] = Field(default=None)
     ALPHAVANTAGE_API_KEY: Optional[str] = Field(default=None)
     BIST_PROVIDER_API_KEY: Optional[str] = Field(default=None)
+    FRED_API_KEY: Optional[str] = Field(default=None)
+    EVDS_API_KEY: Optional[str] = Field(default=None)
 
     # Aracı Kurum Entegrasyonları
     BROKER_PROVIDER: str = Field(default="paper")

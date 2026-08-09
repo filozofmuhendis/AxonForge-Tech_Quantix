@@ -471,4 +471,13 @@ def trigger_maintenance():
     return {"job_id": task.id, "status": "QUEUED", "mesaj": "Bakım ve drift takibi görevi kuyruğa eklendi."}
 
 
+@api_router.get("/system/ingest/macro")
+def trigger_macro_ingestion():
+    """Tüm küresel ve yerel makroekonomik verileri asenkron çekmeye başlar."""
+    from workers.tasks import ingest_macro_data_task
+    task = ingest_macro_data_task.delay()
+    return {"job_id": task.id, "status": "QUEUED", "mesaj": "Makro veri çekme görevi kuyruğa eklendi."}
+
+
+
 

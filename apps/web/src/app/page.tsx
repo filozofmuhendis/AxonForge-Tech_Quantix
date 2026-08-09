@@ -303,8 +303,8 @@ export default function Home() {
       {/* 1. Üst Bar (Header) */}
       <header className="border-b border-[#2B3139] px-6 py-4 bg-[#12161A] flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          <Activity className="h-8 w-8 text-[#0ECB81] animate-pulse" />
-          <h1 className="text-xl font-bold tracking-wider text-[#FFFFFF]">AXONFORGE <span className="text-xs px-2 py-0.5 rounded bg-[#2B3139] text-[#F0B90B] font-normal">KİŞİSEL TRADING TERMİNALİ</span></h1>
+          <Activity className="h-8 w-8 text-[#25e099] animate-pulse" />
+          <h1 className="text-xl font-bold tracking-wider text-[#FFFFFF]">AXONFORGE-TECH Quantix <span className="text-xs px-2 py-0.5 rounded bg-[#2B3139] text-[#F0B90B] font-normal">KİŞİSEL TRADING TERMİNALİ</span></h1>
         </div>
         
         {/* Sistem Durum Panel Göstergeleri */}
