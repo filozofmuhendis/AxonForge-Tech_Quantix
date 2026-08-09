@@ -12,6 +12,7 @@ from packages.risk_engine.risk import RiskEngine
 from packages.risk_engine.stress import StressTestEngine
 from packages.signal_engine.signals import SignalEngine
 from packages.signal_engine.analog_analysis import HistoricalAnalogAnalyzer
+import pandas as pd
 
 logger = logging.getLogger("axonforge.ai_agent.tools")
 
