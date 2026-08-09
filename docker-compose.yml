@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Veritabanı Servisi
+  db:
+    image: postgres:15-alpine
+    container_name: axonforge-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: axonforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis Önbellek & Görev Kuyruğu Servisi
+  redis:
+    image: redis:7-alpine
+    container_name: axonforge-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  # 3. FastAPI Backend API Servisi
+  api:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: axonforge-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/axonforge
+      - REDIS_URL=redis://redis:6379/0
+      - TIMEZONE=Europe/Istanbul
+      - AUTO_TRADING=false
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  # 4. Next.js Frontend Uygulaması
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: ../../docker/frontend.Dockerfile
+    container_name: axonforge-web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  redisdata:

@@ -1,0 +1,31 @@
+# AxonForge Production Checklist
+
+Bu kontrol listesi, AxonForge terminalinin canlıya (Vercel, Railway, Supabase) hatasız şekilde alınması için tamamlanması gereken operasyonel ve sistemsel adımları içerir.
+
+## Canlıya Geçiş Kontrol Listesi (Deployment Checklist)
+
+- [ ] Supabase created (Supabase PostgreSQL veritabanı kuruldu)
+- [ ] Database migrations ready (İlk Alembic migration dosyaları Supabase şeması için doğrulandı)
+- [ ] Database backup available (Supabase yedekleme zamanlaması ve kurtarma planı doğrulandı)
+- [ ] Redis configured (Railway üzerindeki Redis önbellek/kuyruk adresi hazırlandı)
+- [ ] Railway API configured (FastAPI API servisi Railway üzerinde oluşturuldu)
+- [ ] Railway workers configured (Celery asenkron worker servisleri Railway üzerinde oluşturuldu)
+- [ ] Environment variables configured (Çevre değişkenleri API, Worker ve Frontend için tanımlandı)
+- [ ] Secrets secured (Tüm gizli anahtarlar/API key'ler Railway ve Vercel panellerine taşındı, koda gömülmedi)
+- [ ] CORS configured (Sadece gerçek frontend alan adlarına izin veren dynamic CORS yapılandırıldı)
+- [ ] Health checks configured (`/health`, `/ready` ve `/system/status` uç noktaları test edildi)
+- [ ] Vercel configured (Next.js uygulaması Vercel üzerinde tanımlandı)
+- [ ] Production API URL configured (`NEXT_PUBLIC_API_URL` çevre değişkeni Vercel'de tanımlandı)
+- [ ] Market providers configured (Twelve Data, Finnhub vb. sağlayıcı API anahtarları Railway'e girildi)
+- [ ] Data freshness verified (Veri tazeliği limit kontrolleri doğrulandı)
+- [ ] AI provider configured (Lokal Ollama veya OpenAI API bağlantısı kontrol edildi)
+- [ ] Paper broker enabled (`PAPER_TRADING=true` ayarı doğrulandı)
+- [ ] Real broker disabled (`ALLOW_REAL_BROKER=false` ve `AUTO_TRADING=false` ayarı doğrulandı)
+- [ ] Logging enabled (Log seviyesi `INFO` olarak production için yapılandırıldı)
+- [ ] Monitoring enabled (Sistem durum izleme metrikleri aktifleştirildi)
+- [ ] Frontend production build successful (`npm run build` hatasız tamamlandı)
+- [ ] Backend production startup successful (Uvicorn `0.0.0.0:$PORT` üzerinden hatasız başladı)
+- [ ] Workers operational (Celery worker'lar Redis kuyruğuna bağlandı ve işleri başarıyla tüketiyor)
+- [ ] Smoke tests passed (Uçtan uca duman testleri yeşil)
+- [ ] No secrets exposed (Kod içinde veya Git geçmişinde sızmış API key olmadığı tarandı)
+- [ ] Documentation complete (Tüm mimari, kurulum ve operasyonel dokümanlar güncellendi)
