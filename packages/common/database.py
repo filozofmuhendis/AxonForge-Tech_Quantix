@@ -14,12 +14,16 @@ class DatabaseUnavailableException(Exception):
         super().__init__(self.message)
 
 # Veritabanı bağlantı motorunun oluşturulması (Sadece PostgreSQL)
-if not settings.DATABASE_URL.startswith("postgresql"):
+if not settings.DATABASE_URL.startswith("postgresql") and not settings.DATABASE_URL.startswith("postgres"):
     # Hata fırlatarak SQLite veya başka bir veritabanının kullanılmasını engelliyoruz
     raise ValueError("HATA: AxonForge sadece PostgreSQL veritabanını destekler.")
 
+db_url = settings.DATABASE_URL
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
 engine = create_engine(
-    settings.DATABASE_URL,
+    db_url,
     pool_pre_ping=True,  # Her sorgudan önce bağlantı durumunu kontrol eder
     pool_size=10,
     max_overflow=20

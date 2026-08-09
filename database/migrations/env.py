@@ -38,6 +38,9 @@ def run_migrations_offline() -> None:
 
     """
     url = settings.DATABASE_URL
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+        
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -58,7 +61,12 @@ def run_migrations_online() -> None:
     """
     # Veritabanı bağlantı dizesini config.py üzerinden dinamik olarak yükle
     configuration = config.get_section(config.config_ini_section) or {}
-    configuration["sqlalchemy.url"] = settings.DATABASE_URL
+    
+    url = settings.DATABASE_URL
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+        
+    configuration["sqlalchemy.url"] = url
     
     # Supabase / PostgreSQL SSL bağlantısı yapılandırmaları
     connectable = engine_from_config(
