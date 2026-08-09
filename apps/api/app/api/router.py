@@ -431,7 +431,7 @@ def get_system_status(db: Session = Depends(get_db)):
     }
 
 
-@api_router.post("/system/ingest/prices")
+@api_router.get("/system/ingest/prices")
 def trigger_price_ingestion():
     """Tüm aktif varlıklar için fiyat barlarını asenkron çekmeye başlar."""
     from workers.tasks import ingest_prices_task
@@ -439,7 +439,7 @@ def trigger_price_ingestion():
     return {"job_id": task.id, "status": "QUEUED", "mesaj": "Fiyat çekme görevi kuyruğa eklendi."}
 
 
-@api_router.post("/system/ingest/news")
+@api_router.get("/system/ingest/news")
 def trigger_news_ingestion():
     """Haberleri ve yapay zeka sentiment analizini asenkron çekmeye başlar."""
     from workers.tasks import run_news_ingestion_task
@@ -447,7 +447,7 @@ def trigger_news_ingestion():
     return {"job_id": task.id, "status": "QUEUED", "mesaj": "Haber çekme görevi kuyruğa eklendi."}
 
 
-@api_router.post("/system/features")
+@api_router.get("/system/features")
 def trigger_feature_generation():
     """Öznitelik matrislerini asenkron hesaplamaya başlar."""
     from workers.tasks import run_feature_generation_task
@@ -455,7 +455,7 @@ def trigger_feature_generation():
     return {"job_id": task.id, "status": "QUEUED", "mesaj": "Öznitelik hesaplama görevi kuyruğa eklendi."}
 
 
-@api_router.post("/system/predict")
+@api_router.get("/system/predict")
 def trigger_prediction_generation():
     """ML yön tahminlerini asenkron hesaplamaya başlar."""
     from workers.tasks import run_prediction_generation_task
@@ -463,11 +463,12 @@ def trigger_prediction_generation():
     return {"job_id": task.id, "status": "QUEUED", "mesaj": "ML yön tahmini görevi kuyruğa eklendi."}
 
 
-@api_router.post("/system/maintenance")
+@api_router.get("/system/maintenance")
 def trigger_maintenance():
     """Model kalibrasyonu ve işlem tez değerlendirmelerini asenkron güncellemeye başlar."""
     from workers.tasks import run_maintenance_task
     task = run_maintenance_task.delay()
     return {"job_id": task.id, "status": "QUEUED", "mesaj": "Bakım ve drift takibi görevi kuyruğa eklendi."}
+
 
 
