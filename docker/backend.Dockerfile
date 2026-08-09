@@ -18,6 +18,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY apps/ /app/apps/
 COPY packages/ /app/packages/
 COPY scripts/ /app/scripts/
+COPY workers/ /app/workers/
+COPY database/ /app/database/
+COPY alembic.ini /app/alembic.ini
+
 
 # Python Path ayarla
 ENV PYTHONPATH=/app
