@@ -260,7 +260,7 @@ export default function Home() {
       if (res.status === 503) {
         const errData = await res.json();
         if (errData.detay === 'AI_AGENT_UNAVAILABLE') {
-          setChatMessages(prev => [...prev, { role: 'assistant', content: 'Hata: YAPAY_ZEKA_ERISILEMEZ. Yapay zeka motoru şu anda çevrimdışı ancak deterministik analizleri yan sekmelerden kullanabilirsiniz.' }]);
+          setChatMessages(prev => [...prev, { role: 'assistant', content: `Hata: ${errData.mesaj || 'Yapay zeka motoru şu anda çevrimdışı.'}` }]);
           return;
         }
       }

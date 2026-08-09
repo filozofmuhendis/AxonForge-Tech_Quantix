@@ -48,13 +48,13 @@ async def database_unavailable_exception_handler(request: Request, exc: Database
 
 @app.exception_handler(AIAgentUnavailableException)
 async def ai_agent_unavailable_exception_handler(request: Request, exc: AIAgentUnavailableException):
-    logger.error("API Hatası: Yapay Zeka Ajanı (LLM) çevrimdışı.")
+    logger.error(f"API Hatası: Yapay Zeka Ajanı (LLM) hatası: {str(exc)}")
     return JSONResponse(
         status_code=503,
         content={
             "hata_kodu": "AI_AGENT_UNAVAILABLE",
             "detay": "AI_AGENT_UNAVAILABLE",
-            "mesaj": "Yapay Zeka Ajanı (LLM) servislerine erişilemiyor. Lütfen Ollama sunucusunu veya harici API anahtarlarını kontrol edin."
+            "mesaj": str(exc)
         }
     )
 

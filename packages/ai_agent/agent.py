@@ -164,6 +164,8 @@ class FinancialAIAgent:
         )
 
     def _format_proposal_response(self, prop: Dict[str, Any]) -> str:
+        if "hata" in prop:
+            return f"**HATA**\nİşlem önerisi oluşturulurken hata: {prop['hata']}"
         if prop.get("islem_onerisi") == "YOK":
             return f"**ÖZET**\nİşlem Önerisi Raporu ({prop['symbol']}).\n\n**SİNYALLER**\n{prop['gerekce']}"
             
@@ -195,6 +197,8 @@ class FinancialAIAgent:
         )
 
     def _format_analysis_response(self, symbol: str, tech: Dict[str, Any], regime: Dict[str, Any]) -> str:
+        if "hata" in tech:
+            return f"**HATA**\nTeknik analiz yapılırken hata: {tech['hata']}"
         return (
             f"**ÖZET**\n{symbol} Piyasa ve Teknik Analiz Raporu.\n\n"
             f"**PİYASA BAĞLAMI**\n"
